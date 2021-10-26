@@ -1,7 +1,7 @@
 // IMPORTATION PACKAGE
 
 const mongoose = require('mongoose');
-const  uniqueValidator  =  require ( 'mongoose-unique-validator' ) ;
+const  uniqueValidator  =  require ('mongoose-unique-validator') ;
 
 // DEFINITION DU SCHEMA
 
@@ -12,6 +12,6 @@ const schemaUser = mongoose.Schema({
 
 // EXPORTATION DU MODULE
 
-schemaUser.plugin (uniqueValidator);
+schemaUser.plugin(uniqueValidator);
 
-module.exports = mongoose.model('user', schemaUser)
+module.exports = mongoose.model('User', schemaUser)

@@ -1,18 +1,16 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+const app = express();
 const mongoose = require('mongoose');
 // const routeSauce = require('./routes/sauces');
 const userRoutes = require('./routes/user');
+const dotenv = require('dotenv')
+dotenv.config()
 
-
-const app = express();
-
-mongoose.connect('mongodb+srv://newuser1:newuser1@cluster0.iwjqp.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
+mongoose.connect(process.env.CONNECTION_MONGODB,
   { useNewUrlParser: true,
     useUnifiedTopology: true })
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
-
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -21,7 +19,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(bodyParser.json())
+app.use(express.json())
 
 // app.use('/api/sauces', saucesRoutes)
 app.use('/api/auth', userRoutes);
