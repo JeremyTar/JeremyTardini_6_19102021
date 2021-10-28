@@ -1,21 +1,26 @@
 const Sauce = require('../models/sauces')
 const fs = require('fs')
 
-exports.getAllSauces = (req, res, next) => { //Pour obtenir toutes nos sauces 
-    Sauce.find() //on utilise .find de mangoose pour chercher sur la database nos Sauces.
-        .then(sauces => res.status(200).json(sauces)) //Ensuite, on renvoie une réponse positive avec les dites sauces.
-        .catch(err => res.status(500).json({err}))  //Sinon une érreur.
+// Function pour affichage de sauces
+
+module.exports.getAllSauces = (req, res, next) => {
+    Sauce.find()
+        .then(sauces => res.status(200).json(sauces))
+        .catch(err => res.status(500).json({err}))
+}
+//function pour affichage d'une seule sauce 
+
+module.exports.getOneSauce = (req, res, next) => {    
+    Sauce.findOne({ _id: req.params.id}) 
+        .then(sauce => res.status(200).json(sauce))
+        .catch(err => res.status(500).json({err}))
 }
 
-exports.getOneSauce = (req, res, next) => { //Pour obtenir une seule sauce    
-    Sauce.findOne({ _id: req.params.id}) //On cherche la sauce par son id.
-        .then(sauce => res.status(200).json(sauce)) //Ensuite, on renvoie une réponse positive avec la dite sauce.
-        .catch(err => res.status(500).json({err}))  //Sinon une érreur.
-}
+// function pour créer un sauce
 
-exports.createSauce = (req, res, next) => {
+module.exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
-    delete sauceObject._id; // suppression de l'ID fournit par le front car MongoDB en créé un automatiquement.
+    delete sauceObject._id;  // suppression de l'ID fournit par le front car MongoDB en créé un automatiquement.
     const sauce = new Sauce({
         ...sauceObject,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
@@ -39,7 +44,9 @@ exports.createSauce = (req, res, next) => {
       );
 }
 
-exports.modifySauce= (req, res, next) => {
+// function de moficiation de sauce
+
+module.exports.modifySauce= (req, res, next) => {
     const sauceObject = req.file ?
     {
         ...JSON.parse(req.body.sauce),
@@ -60,8 +67,10 @@ exports.modifySauce= (req, res, next) => {
       }
     );
   };
-  
-exports.deleteSauce = (req, res, next) => {
+
+// function de suppression de sauce
+
+module.exports.deleteSauce = (req, res, next) => {
     Sauce.findOne({_id: req.params.id})
       .then(Sauce => {
         const filename = Sauce.imageUrl.split('/images/')[1];
@@ -74,8 +83,9 @@ exports.deleteSauce = (req, res, next) => {
       .catch(error => res.status(500).json({error}));
   };
 
+//function ajout ou suppression de like par
 
-exports.likesDislikes = (req, res, next) => {
+module.exports.likesDislikes = (req, res, next) => {
     if(req.body.like === 1) {
         Sauce.updateOne(
             {_id: req.params.id},

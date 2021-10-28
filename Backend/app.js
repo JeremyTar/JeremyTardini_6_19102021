@@ -1,11 +1,22 @@
-const express = require('express');
-const app = express();
+const express = require('express'); // instalation de express
 const mongoose = require('mongoose');
-const routeSauces = require('./routes/sauces');
-const userRoutes = require('./routes/user');
+const helmet = require("helmet"); // elements de securite pour la protection des headers
+const xss = require('xss-clean'); // elements de securite contre les attaque xss
+const rateLimit = require("express-rate-limit"); // element express pour limiter le temps de connection
 const dotenv = require('dotenv')
 const path = require('path')
 dotenv.config()
+
+// Route pour nos sauce et user
+
+const routeSauces = require('./routes/sauces');
+const userRoutes = require('./routes/user');
+
+// création de notre applicatio nexpress
+
+const app = express();
+
+// connection 0 la base de donne MongoDB
 
 mongoose.connect(process.env.CONNECTION_MONGODB,
   { useNewUrlParser: true,
@@ -20,8 +31,21 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.json())
-app.use('/images', express.static(path.join(__dirname, 'images')));
+
+app.use(express.json()) // substitue bodyparser 
+app.use(helmet()); 
+app.use(xss());
+
+
+// Constante de limitation de temps de connection par IP. Module de Node Rate-limite
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+
+app.use(limiter);
+
+app.use('/images', express.static(path.join(__dirname, 'images'))); // dossier multer
 app.use('/api/sauces', routeSauces)
 app.use('/api/auth', userRoutes);
 

@@ -1,6 +1,8 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt'); // module de hash du MDP
 const User = require('../models/user');
-const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken'); // Token pour authetification unique par utilisateur
+
+// function SIGNUP
 
 module.exports.signup = (req, res, next) => {
   bcrypt.hash(req.body.password, 10)
@@ -16,8 +18,9 @@ module.exports.signup = (req, res, next) => {
     .catch(error => res.status(500).json({ error }));
 };
 
+// function LOGIN
 
-  exports.login = (req, res, next) => {
+module.exports.login = (req, res, next) => {
     User.findOne({ email: req.body.email })
       .then(user => {
         if (!user) {
