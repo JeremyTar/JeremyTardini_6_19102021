@@ -1,13 +1,14 @@
 const express = require('express'); // instalation de express
-const mongoose = require('mongoose');
-const helmet = require("helmet"); // elements de securite pour la protection des headers
-const xss = require('xss-clean'); // elements de securite contre les attaque xss
-const rateLimit = require("express-rate-limit"); // element express pour limiter le temps de connection
-const dotenv = require('dotenv')
-const path = require('path')
-dotenv.config()
+const mongoose = require('mongoose'); // Module pour l'utilisation de MongoDB
+const helmet = require("helmet"); // Module de securite pour la protection des headers
+const xss = require('xss-clean'); // Module de securite contre les attaque xss
+const rateLimit = require("express-rate-limit"); // Module express pour limiter le temps de connection
+const dotenv = require('dotenv'); // Module pour charger notre variable d'environnement
+const cors = require('cors'); // Module pour gestion des requetes CORS
+const path = require('path');
+dotenv.config();
 
-// Route pour nos sauce et user
+// Route pour sauces et user
 
 const routeSauces = require('./routes/sauces');
 const userRoutes = require('./routes/user');
@@ -24,18 +25,12 @@ mongoose.connect(process.env.CONNECTION_MONGODB,
   .then(() => console.log('Connexion à MongoDB réussie !'))
   .catch(() => console.log('Connexion à MongoDB échouée !'));
 
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-  next();
-});
+ // Authorisation utilisateur CRUD 
 
-
-app.use(express.json()) // substitue bodyparser 
+app.use(cors())
+app.use(express.json()) // substitue bodyparser. ligne pour appeller fonction parse de express
 app.use(helmet()); 
 app.use(xss());
-
 
 // Constante de limitation de temps de connection par IP. Module de Node Rate-limite
 const limiter = rateLimit({
