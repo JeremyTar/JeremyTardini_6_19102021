@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken'); // Token pour authetification unique par ut
 // function SIGNUP
 
 module.exports.signup = (req, res, next) => {
-  bcrypt.hash(req.body.password, 10)
+    bcrypt.hash(req.body.password, 10)
     .then(hash => {
       const user = new User({
         email: req.body.email,
@@ -32,15 +32,15 @@ module.exports.login = (req, res, next) => {
               return res.status(401).json({ error: 'Mot de passe incorrect !' });
             }
             res.status(200).json({
-              userId: user._id,
-              token: jwt.sign(
-                { userId: user._id },
-                'RANDOM_TOKEN_SECRET',
-                { expiresIn: '24h' }
-              )
-            });
-          })
-          .catch(error => res.status(500).json({ error }));
+            userId: user._id,
+            token: jwt.sign(
+              { userId: user._id },
+              process.env.AUTH_KEY,
+              { expiresIn: '24h' }
+            )
+          });
+        })
+        .catch(error => res.status(500).json({ error }));
       })
       .catch(error => res.status(501).json({ error }));
   };

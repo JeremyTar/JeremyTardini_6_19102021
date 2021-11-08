@@ -17,7 +17,7 @@ const userRoutes = require('./routes/user');
 
 const app = express();
 
-// connection 0 la base de donne MongoDB
+// connection à la base de donnée MongoDB
 
 mongoose.connect(process.env.CONNECTION_MONGODB,
   { useNewUrlParser: true,
